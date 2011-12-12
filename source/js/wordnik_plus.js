@@ -1,5 +1,5 @@
-//// = require "libs/underscore"
-//// = require "libs/backbone"
+//= require "libs/underscore"
+//= require "libs/backbone"
 //= require "mylibs/plus.js"
 //= require "mylibs/utils.js"
 //= require_tree "./mylibs"
@@ -11,8 +11,5 @@
   var plus = new Wordnik.Plus();
   plus.render();
 
-
   console.log("done");
-  
-  
 })(jQuery);
