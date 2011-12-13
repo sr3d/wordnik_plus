@@ -7,13 +7,17 @@ var Wordnik = {
     {text: "Prokhorov", concept: "Prokhorov"},
     {text: "Vladimir Putin", concept: "Vladimir Putin"},
     {text: "United Russia party", concept: "United Russia Party"},
+    {text: "Russia", concept: "USSR"}
   ];
   
-  var conanBase = "http://";
+  // conan.{format}/textToConcept
+  var conanBase = "http://ec2-50-18-98-244.us-west-1.compute.amazonaws.com/api/conan.json/";
+  // var conanBase = "http://jake.local:8002/api/conan.json/";
   
   var square = function(n) { return n*n; };
   
-  var radius = 300; // px
+  var radius = 150; // px
+  var weight = 0.6;
   
   var color = "fe57a1"; //254 87 161
   var bgColor = function(ratio) {
@@ -30,7 +34,7 @@ var Wordnik = {
   };
   
   
-  var pinnedConcepts = {};
+  var pinnedConcepts = Wordnik.pinnedConcepts = {};
   
   Wordnik.Plus = Backbone.View.extend({
     el: 'body'
@@ -51,8 +55,6 @@ var Wordnik = {
       this.highlightConcepts();
       
       this.renderRecommendedWidget();
-      
-
     }
     
     ,removeAd: function() {
@@ -76,12 +78,68 @@ var Wordnik = {
     }
 
     ,highlightConcepts: function() {
-      /* read the text and highlight matching word */
-      for(var i = 0; i < concepts.length; i++) {
-        $('div.article p').highlight(concepts[i].text, concepts[i].concept );
-      }
-      this.$concepts = $('div.article span.highlight');
-      console.log("Done highlightConcepts");    
+      var self = this;
+      // debugger
+      console.log("Submitting text %o", conanBase + 'textToConcept');
+      
+      var text = this.extractText();
+      var limit = 800;
+      for(var i = 0; i < Math.ceil(text.length / limit); i++ ) {
+        // debugger
+        var doc = text.substr( i * limit, i * limit + Math.min(text.length,  i * limit + limit) );
+        // console.log("doc %o", doc); 
+        (function() {
+          $.getJSON( conanBase + 'textToConcept/?callback=?&numToReturn=10', { 
+            doc: doc
+          }, function(concepts) {
+            console.log("concepts %o", concepts);
+            /* read the text and highlight matching word */
+            for(var i = 0; i < concepts.length; i++) {
+              if(concepts[i].text.length > 3 )
+                $('div.article p').highlight( concepts[i].text, concepts[i].concept );
+            }
+            self.$concepts = $('div.article span.highlight');
+            console.log("Done highlightConcepts");
+
+            self.ready = true;
+          })
+        })(doc);
+      };
+
+      
+      // $.getJSON( conanBase + 'textToConcept/?callback=?&numToReturn=10', { 
+      //   doc: this.extractText()
+      // }, function(concepts) {
+      //   console.log("concepts %o", concepts);
+      //   /* read the text and highlight matching word */
+      //   for(var i = 0; i < concepts.length; i++) {
+      //     if(concepts[i].text.length > 3 )
+      //       $('div.article p').highlight( concepts[i].text, concepts[i].concept );
+      //   }
+      //   self.$concepts = $('div.article span.highlight');
+      //   console.log("Done highlightConcepts");
+      //   
+      //   self.ready = true;
+      // })
+
+
+      // for(var i = 0; i < concepts.length; i++) {
+      //   $('div.article p').highlight(concepts[i].text, concepts[i].concept );
+      // }
+      // self.$concepts = $('div.article span.highlight');
+
+      
+    }
+    
+    ,extractText: function() {
+      if(this.text) return this.text;
+      var text = $('div.article p').map(function() { return this.innerHTML }).get().join('\n');
+      // strip html text
+      this.text = text.replace(/(<([^>]+)>)/ig,"")
+        // .replace(/\ba|an|the|in|on|up|of\b/ig,'');
+      
+      // this.text = this.text.substr(0, Math.min(900, this.text.length));
+      return this.text;
     }
     
     ,getConcepts: function() {
@@ -89,7 +147,7 @@ var Wordnik = {
     }
     
     ,onMouseMove: function(e) {
-      // console.log("e %o", e);
+      if(!this.ready) return;
       var scrollTop = $(document).scrollTop(),
           x = e.clientX,
           y = e.clientY + scrollTop,
@@ -106,6 +164,7 @@ var Wordnik = {
         if(pinnedConcepts[ $el.data('concept')]) {
           ratio = 0;
         } else {
+          $el.removeClass('concept');
           ratio = distance/radius;
         }
         $el.css({backgroundColor: bgColor(ratio)});
@@ -130,14 +189,14 @@ var Wordnik = {
     
     ,pinConcept: function(e) {
       var el = $(e.currentTarget);
-      if(el.hasClass('pinned')) {
+      if(pinnedConcepts[el.data('concept')]) {
         delete pinnedConcepts[el.data('concept')];
         el.removeClass('pinned');
-        console.log("unpin");
+        console.log("unpin" + el.data('concept') );
       } else {
         pinnedConcepts[el.data('concept')] = true;
         el.addClass('pinned');
-        console.log("pin");
+        console.log("pin" + el.data('concept') );
       }
     }
   });

@@ -3,12 +3,24 @@
 // }
 
 
-.highlight { background-color: white; cursor: pointer; cursor: hand; }
+.highlight { background-color: white; cursor: pointer; cursor: hand; border-bottom: 1px dotted #c1c1c1; }
 
 
 .wordnik_plus_recommended { border: 3px solid #DCDCDC;  background-color: white;  position: fixed;  bottom: -3px;  right: 10px;  width: 300px; text-align: left; padding: 10px; z-index: 999999;
+  -moz-transition: bottom 500ms ease-in-out;
+  -webkit-transition-delay: 5.5s;
+  -webkit-transition: bottom 500ms ease-in-out;
+  
   h1 { font-size: 16px; }
   h2 { font-size: 14px; font-weight: bold;}
+  
+  li { padding: 3px 5px; border-bottom: 1px solid #DCDCDC;
+    &.pinned { 
+      span { padding: 3px; text-decoration: underscore; background-color: #ffadd0 }
+    }
+  }
+  
+  .loading { color: #b5b5b5; }
 }
 
-.pinned { background-color: #fe57a1; }
+span.pinned { background-color: #fe57a1; }
