@@ -3,4 +3,12 @@
 // }
 
 
-.highlight { background-color: #fe57a1 }
+.highlight { background-color: white; cursor: pointer; cursor: hand; }
+
+
+.wordnik_plus_recommended { border: 3px solid #DCDCDC;  background-color: white;  position: fixed;  bottom: -3px;  right: 10px;  width: 300px; text-align: left; padding: 10px; z-index: 999999;
+  h1 { font-size: 16px; }
+  h2 { font-size: 14px; font-weight: bold;}
+}
+
+.pinned { background-color: #fe57a1; }

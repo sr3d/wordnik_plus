@@ -13,7 +13,7 @@ Johann Burkard
 <mailto:jb@eaio.com>
 
 */
-jQuery.fn.highlight = function(pat) {
+jQuery.fn.highlight = function(pat, concept) {
  function innerHighlight(node, pat) {
   var skip = 0;
   if (node.nodeType == 3) {
@@ -21,6 +21,7 @@ jQuery.fn.highlight = function(pat) {
    if (pos >= 0) {
     var spannode = document.createElement('span');
     spannode.className = 'highlight';
+    jQuery(spannode).data('concept', concept);
     var middlebit = node.splitText(pos);
     var endbit = middlebit.splitText(pat.length);
     var middleclone = middlebit.cloneNode(true);

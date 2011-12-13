@@ -16,7 +16,7 @@
     var methods = {
       
       init : function(options) {
-        
+        options = $.extend({mode: 'auto'}, options || {});
         var settings;
         
         if (options.mode !== 'auto' && options.mode !== 'manual') {
