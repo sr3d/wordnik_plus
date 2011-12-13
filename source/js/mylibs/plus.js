@@ -16,7 +16,7 @@ var Wordnik = {
   
   var square = function(n) { return n*n; };
   
-  var radius = 150; // px
+  var radius = 200; // px
   var weight = 0.6;
   
   var color = "fe57a1"; //254 87 161
